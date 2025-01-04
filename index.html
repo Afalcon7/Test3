@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Aventura en las Montañas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('https://source.unsplash.com/1600x900/?mountains') no-repeat center center;
+            background-size: cover;
+            color: #fff;
+            text-align: center;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        #game-screen, #riddle-screen, #final-screen {
+            display: none;
+        }
+        #maze-container {
+            position: relative;
+            display: inline-block;
+        }
+        #maze-canvas {
+            background: #eee;
+            border: 2px solid #fff;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .control-button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .control-button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="intro-screen">
+        <h1>La Aventura en las Montañas</h1>
+        <p>¡Bienvenido, aventurero! Tu misión es encontrar un tesoro escondido en las montañas de Andorra. ¿Estás listo?</p>
+        <button class="button" onclick="startGame()">Comenzar Aventura</button>
+    </div>
+
+    <div class="container" id="game-screen">
+        <h2>Prueba 1: Encuentra el camino</h2>
+        <p>Guía al aventurero a través del laberinto para llegar al tesoro.</p>
+        <div id="maze-container">
+            <canvas id="maze-canvas" width="400" height="400"></canvas>
+        </div>
+        <div class="controls">
+            <button class="control-button" onclick="move('up')">Arriba</button>
+            <div>
+                <button class="control-button" onclick="move('left')">Izquierda</button>
+                <button class="control-button" onclick="move('right')">Derecha</button>
+            </div>
+            <button class="control-button" onclick="move('down')">Abajo</button>
+        </div>
+        <br>
+        <button class="button" onclick="startRiddle()">Siguiente Prueba</button>
+    </div>
+
+    <div class="container" id="riddle-screen">
+        <h2>Prueba 2: Resuelve la adivinanza</h2>
+        <p>Soy pequeño, entre montañas me escondo, y en invierno me cubro de blanco. ¿Quién soy?</p>
+        <input type="text" id="riddle-answer" placeholder="Escribe tu respuesta aquí">
+        <br><br>
+        <button class="button" onclick="checkRiddle()">Enviar respuesta</button>
+    </div>
+
+    <div class="container" id="final-screen">
+        <h2>¡Felicidades, aventurero!</h2>
+        <p>Has completado todas las pruebas y has ganado un viaje de 4 días a Andorra.</p>
+        <p>Prepárate para una experiencia inolvidable en las montañas.</p>
+    </div>
+
+    <script>
+        let character = { x: 10, y: 10, size: 20 };
+        let mazeCtx, mazeCanvas;
+
+        function startGame() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            mazeCanvas = document.getElementById('maze-canvas');
+            mazeCtx = mazeCanvas.getContext('2d');
+            drawMaze();
+        }
+
+        function drawMaze() {
+            mazeCtx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+            mazeCtx.fillStyle = 'black';
+            mazeCtx.fillRect(50, 50, 300, 10); // Línea horizontal
+            mazeCtx.fillRect(50, 50, 10, 300); // Línea vertical
+
+            // Dibujar el personaje
+            mazeCtx.fillStyle = 'red';
+            mazeCtx.beginPath();
+            mazeCtx.arc(character.x, character.y, character.size / 2, 0, Math.PI * 2);
+            mazeCtx.fill();
+        }
+
+        function move(direction) {
+            const step = 10;
+            switch (direction) {
+                case 'up':
+                    character.y -= step;
+                    break;
+                case 'down':
+                    character.y += step;
+                    break;
+                case 'left':
+                    character.x -= step;
+                    break;
+                case 'right':
+                    character.x += step;
+                    break;
+            }
+            drawMaze();
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowUp') move('up');
+            if (event.key === 'ArrowDown') move('down');
+            if (event.key === 'ArrowLeft') move('left');
+            if (event.key === 'ArrowRight') move('right');
+        });
+
+        function startRiddle() {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('riddle-screen').style.display = 'block';
+        }
+
+        function checkRiddle() {
+            const answer = document.getElementById('riddle-answer').value.toLowerCase();
+            if (answer === 'andorra') {
+                alert('¡Correcto!');
+                document.getElementById('riddle-screen').style.display = 'none';
+                document.getElementById('final-screen').style.display = 'block';
+            } else {
+                alert('Respuesta incorrecta. Intenta de nuevo.');
+            }
+        }
+    </script>
+</body>
+</html>
